@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: finance-tracker-postgres
+    environment:
+      POSTGRES_DB: finance_tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+
+  backend:
+    build:
+      context: ./backend
+    container_name: finance-tracker-backend
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/finance_tracker
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_ACCESS_SECRET: bXktc3VwZXItc2VjdXJlLWFjY2Vzcy10b2tlbi1rZXktZm9yLWZpbmFuY2UtdHJhY2tlci0xMjM0NTY3ODkw
+      JWT_REFRESH_SECRET: bXktc3VwZXItc2VjdXJlLXJlZnJlc2gtdG9rZW4ta2V5LWZvci1maW5hbmNlLXRyYWNrZXItMDk4NzY1NDMyMQ==
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: finance-tracker-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://backend:8080
+    ports:
+      - "4173:4173"
+
+volumes:
+  postgres_data:

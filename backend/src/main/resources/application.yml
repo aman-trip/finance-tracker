@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/finance_tracker}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.finance: INFO
+
+app:
+  jwt:
+    access-token-secret: ${JWT_ACCESS_SECRET:bXktc3VwZXItc2VjdXJlLWFjY2Vzcy10b2tlbi1rZXktZm9yLWZpbmFuY2UtdHJhY2tlci0xMjM0NTY3ODkw}
+    refresh-token-secret: ${JWT_REFRESH_SECRET:bXktc3VwZXItc2VjdXJlLXJlZnJlc2gtdG9rZW4ta2V5LWZvci1maW5hbmNlLXRyYWNrZXItMDk4NzY1NDMyMQ==}
+    access-token-expiration-seconds: 3600
+    refresh-token-expiration-seconds: 1209600
