@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -22,6 +23,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({BadRequestException.class, ConstraintViolationException.class, IllegalArgumentException.class})
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException exception) {
         return build(HttpStatus.BAD_REQUEST, exception.getMessage(), Map.of());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
+        return build(HttpStatus.BAD_REQUEST, "Request violates data constraints", Map.of());
     }
 
     @ExceptionHandler(UnauthorizedException.class)

@@ -31,4 +31,21 @@ public class ReportDtos {
             BigDecimal balance
     ) {
     }
+
+    public record InsightItem(
+            String type,
+            String title,
+            String description,
+            String severity
+    ) {
+    }
+
+    public record FutureBalancePredictionResponse(
+            BigDecimal currentBalance,
+            BigDecimal projectedRecurringNet,
+            BigDecimal averageDailySpending,
+            BigDecimal predictedBalance,
+            Integer horizonDays
+    ) {
+    }
 }

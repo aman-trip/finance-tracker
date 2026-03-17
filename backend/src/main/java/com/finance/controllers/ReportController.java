@@ -2,7 +2,9 @@ package com.finance.controllers;
 
 import com.finance.dto.ReportDtos.AccountBalanceTrendItem;
 import com.finance.dto.ReportDtos.CategorySpendResponse;
+import com.finance.dto.ReportDtos.FutureBalancePredictionResponse;
 import com.finance.dto.ReportDtos.IncomeExpenseTrendItem;
+import com.finance.dto.ReportDtos.InsightItem;
 import com.finance.services.ReportService;
 import java.time.LocalDate;
 import java.util.List;
@@ -42,5 +44,15 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
         return reportService.accountBalanceTrend(startDate, endDate);
+    }
+
+    @GetMapping("/insights")
+    public List<InsightItem> insights() {
+        return reportService.insights();
+    }
+
+    @GetMapping("/future-balance-prediction")
+    public FutureBalancePredictionResponse futureBalancePrediction() {
+        return reportService.futureBalancePrediction();
     }
 }

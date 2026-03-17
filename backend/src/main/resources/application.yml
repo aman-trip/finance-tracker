@@ -22,8 +22,10 @@ logging:
     com.finance: INFO
 
 app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4173,http://localhost:5173,http://127.0.0.1:4173,http://127.0.0.1:5173}
   jwt:
-    access-token-secret: ${JWT_ACCESS_SECRET:bXktc3VwZXItc2VjdXJlLWFjY2Vzcy10b2tlbi1rZXktZm9yLWZpbmFuY2UtdHJhY2tlci0xMjM0NTY3ODkw}
-    refresh-token-secret: ${JWT_REFRESH_SECRET:bXktc3VwZXItc2VjdXJlLXJlZnJlc2gtdG9rZW4ta2V5LWZvci1maW5hbmNlLXRyYWNrZXItMDk4NzY1NDMyMQ==}
+    access-token-secret: ${JWT_ACCESS_SECRET:}
+    refresh-token-secret: ${JWT_REFRESH_SECRET:}
     access-token-expiration-seconds: 3600
     refresh-token-expiration-seconds: 1209600

@@ -39,6 +39,7 @@ public class RecurringTransactionService {
     @Transactional
     public RecurringTransactionResponse create(RecurringTransactionRequest request) {
         validateType(request.type());
+        validateDateRange(request);
         UUID userId = currentUserService.getCurrentUserId();
         RecurringTransaction recurring = new RecurringTransaction();
         recurring.setUser(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found")));
@@ -49,6 +50,7 @@ public class RecurringTransactionService {
     @Transactional
     public RecurringTransactionResponse update(UUID id, RecurringTransactionRequest request) {
         validateType(request.type());
+        validateDateRange(request);
         UUID userId = currentUserService.getCurrentUserId();
         RecurringTransaction recurring = getRecurring(id, userId);
         map(recurring, request, userId);
@@ -140,6 +142,15 @@ public class RecurringTransactionService {
     private void validateType(TransactionType type) {
         if (type == TransactionType.TRANSFER_IN || type == TransactionType.TRANSFER_OUT) {
             throw new BadRequestException("Recurring transfers are not supported");
+        }
+    }
+
+    private void validateDateRange(RecurringTransactionRequest request) {
+        if (request.nextRunDate().isBefore(request.startDate())) {
+            throw new BadRequestException("Next run date must be on or after start date");
+        }
+        if (request.endDate() != null && request.nextRunDate().isAfter(request.endDate())) {
+            throw new BadRequestException("Next run date must be on or before end date");
         }
     }
 }

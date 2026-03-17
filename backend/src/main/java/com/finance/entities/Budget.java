@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Getter;
@@ -16,7 +17,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "budgets")
+@Table(
+        name = "budgets",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_budgets_user_category_month_year",
+                        columnNames = {"user_id", "category_id", "month", "year"}
+                )
+        }
+)
 public class Budget {
 
     @Id

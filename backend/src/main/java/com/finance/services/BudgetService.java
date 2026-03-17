@@ -7,6 +7,7 @@ import com.finance.entities.TransactionType;
 import com.finance.exception.BadRequestException;
 import com.finance.exception.NotFoundException;
 import com.finance.repositories.BudgetRepository;
+import com.finance.repositories.TransactionRepository;
 import com.finance.repositories.UserRepository;
 import com.finance.security.CurrentUserService;
 import java.math.BigDecimal;
@@ -25,7 +26,7 @@ public class BudgetService {
 
     private final BudgetRepository budgetRepository;
     private final CategoryService categoryService;
-    private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
 
@@ -40,9 +41,7 @@ public class BudgetService {
     @Transactional
     public BudgetResponse create(BudgetRequest request) {
         UUID userId = currentUserService.getCurrentUserId();
-        if (budgetRepository.existsByUserIdAndCategoryIdAndMonthAndYear(userId, request.categoryId(), request.month(), request.year())) {
-            throw new BadRequestException("Budget already exists for this category and month");
-        }
+        validateUniqueBudget(userId, request, null);
         Budget budget = new Budget();
         budget.setUser(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found")));
         map(budget, request, userId);
@@ -53,6 +52,7 @@ public class BudgetService {
     public BudgetResponse update(UUID id, BudgetRequest request) {
         UUID userId = currentUserService.getCurrentUserId();
         Budget budget = getBudget(id, userId);
+        validateUniqueBudget(userId, request, id);
         map(budget, request, userId);
         return toResponse(budgetRepository.save(budget));
     }
@@ -76,23 +76,32 @@ public class BudgetService {
         budget.setAlertThresholdPercent(request.alertThresholdPercent());
     }
 
+    private void validateUniqueBudget(UUID userId, BudgetRequest request, UUID existingBudgetId) {
+        boolean exists = existingBudgetId == null
+                ? budgetRepository.existsByUserIdAndCategoryIdAndMonthAndYear(userId, request.categoryId(), request.month(), request.year())
+                : budgetRepository.existsByUserIdAndCategoryIdAndMonthAndYearAndIdNot(
+                userId,
+                request.categoryId(),
+                request.month(),
+                request.year(),
+                existingBudgetId
+        );
+        if (exists) {
+            throw new BadRequestException("Budget already exists for this category and month");
+        }
+    }
+
     private BudgetResponse toResponse(Budget budget) {
         YearMonth yearMonth = YearMonth.of(budget.getYear(), budget.getMonth());
         LocalDate start = yearMonth.atDay(1);
         LocalDate end = yearMonth.atEndOfMonth();
-        BigDecimal spent = transactionService.search(
-                        null,
-                        budget.getCategory().getId(),
-                        null,
-                        TransactionType.EXPENSE,
-                        start,
-                        end,
-                        0,
-                        500
-                )
-                .stream()
-                .map(item -> item.amount())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal spent = transactionRepository.sumAmountByUserIdAndCategoryIdAndTypeAndTransactionDateBetween(
+                budget.getUser().getId(),
+                budget.getCategory().getId(),
+                TransactionType.EXPENSE,
+                start,
+                end
+        );
 
         BigDecimal utilization = budget.getAmount().compareTo(BigDecimal.ZERO) == 0
                 ? BigDecimal.ZERO

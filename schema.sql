@@ -85,5 +85,6 @@ CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id_date ON transactions(user_id, transaction_date);
 CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON transactions(account_id);
 CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON budgets(user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_budgets_user_category_month_year ON budgets(user_id, category_id, month, year);
 CREATE INDEX IF NOT EXISTS idx_goals_user_id ON goals(user_id);
 CREATE INDEX IF NOT EXISTS idx_recurring_user_id_next_run ON recurring_transactions(user_id, next_run_date);

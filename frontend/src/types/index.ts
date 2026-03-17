@@ -117,3 +117,18 @@ export type AccountBalanceTrendItem = {
   accountName: string;
   points: { date: string; balance: number }[];
 };
+
+export type Insight = {
+  type: string;
+  title: string;
+  description: string;
+  severity: "HIGH" | "MEDIUM" | "LOW" | "INFO";
+};
+
+export type FutureBalancePrediction = {
+  currentBalance: number;
+  projectedRecurringNet: number;
+  averageDailySpending: number;
+  predictedBalance: number;
+  horizonDays: number;
+};

@@ -28,20 +28,22 @@ export const LoginPage = () => {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-[32px] border border-line bg-panel p-8 shadow-panel">
-        <p className="text-sm uppercase tracking-[0.25em] text-muted">Finance Tracker</p>
-        <h1 className="mt-3 font-display text-4xl text-ink">Welcome back</h1>
-        <p className="mt-3 text-sm text-muted">Sign in to manage your personal finances across accounts, budgets, goals, and reports.</p>
+    <div className="auth-shell flex min-h-screen items-center justify-center px-4 py-8">
+      <div className="auth-card w-full max-w-lg rounded-[34px] border border-line bg-panel p-7 shadow-panel sm:p-10">
+        <div className="auth-badge">Finance Tracker</div>
+        <h1 className="mt-5 font-display text-4xl leading-tight text-ink sm:text-5xl">Welcome back</h1>
+        <p className="mt-4 max-w-md text-base leading-relaxed text-muted">
+          Sign in to manage your personal finances across accounts, budgets, goals, and reports.
+        </p>
 
-        <form className="mt-8 space-y-4" onSubmit={handleSubmit((values) => mutation.mutate(values))}>
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit((values) => mutation.mutate(values))}>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink">Email</label>
+            <label className="mb-2 block text-sm font-semibold text-ink">Email</label>
             <input type="email" {...register("email")} />
             {errors.email ? <p className="mt-1 text-sm text-danger">{errors.email.message}</p> : null}
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink">Password</label>
+            <label className="mb-2 block text-sm font-semibold text-ink">Password</label>
             <input type="password" {...register("password")} />
             {errors.password ? <p className="mt-1 text-sm text-danger">{errors.password.message}</p> : null}
           </div>
@@ -49,15 +51,15 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="w-full rounded-full bg-accent px-5 py-3 font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+            className="auth-cta w-full rounded-full bg-accent px-5 py-3 font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
           >
             {mutation.isPending ? "Signing in..." : "Login"}
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-muted">
+        <p className="mt-7 text-sm text-muted">
           No account yet?{" "}
-          <Link to="/signup" className="font-semibold text-accent">
+          <Link to="/signup" className="font-semibold text-accent transition hover:text-accent2">
             Create one
           </Link>
         </p>

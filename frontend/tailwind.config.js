@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
@@ -15,11 +16,12 @@ export default {
         danger: "var(--danger)"
       },
       boxShadow: {
-        panel: "0 18px 40px rgba(20, 28, 34, 0.08)"
+        panel: "0 18px 40px rgba(15, 27, 45, 0.09)",
+        lift: "0 14px 30px rgba(31, 94, 255, 0.14)"
       },
       fontFamily: {
-        display: ["Georgia", "serif"],
-        body: ["Segoe UI", "sans-serif"]
+        display: ["Plus Jakarta Sans", "Segoe UI", "sans-serif"],
+        body: ["Segoe UI", "Inter", "sans-serif"]
       }
     },
   },

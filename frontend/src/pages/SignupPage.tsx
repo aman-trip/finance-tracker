@@ -35,30 +35,32 @@ export const SignupPage = () => {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-lg rounded-[32px] border border-line bg-panel p-8 shadow-panel">
-        <p className="text-sm uppercase tracking-[0.25em] text-muted">Start Fresh</p>
-        <h1 className="mt-3 font-display text-4xl text-ink">Create your account</h1>
-        <p className="mt-3 text-sm text-muted">Registration seeds your default income and expense categories automatically.</p>
+    <div className="auth-shell flex min-h-screen items-center justify-center px-4 py-8">
+      <div className="auth-card w-full max-w-2xl rounded-[34px] border border-line bg-panel p-7 shadow-panel sm:p-10">
+        <div className="auth-badge">Start Fresh</div>
+        <h1 className="mt-5 font-display text-4xl leading-tight text-ink sm:text-5xl">Create your account</h1>
+        <p className="mt-4 max-w-lg text-base leading-relaxed text-muted">
+          Registration seeds your default income and expense categories automatically.
+        </p>
 
-        <form className="mt-8 grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit((values) => mutation.mutate(values))}>
+        <form className="mt-8 grid gap-5 sm:grid-cols-2" onSubmit={handleSubmit((values) => mutation.mutate(values))}>
           <div className="sm:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-ink">Display name</label>
+            <label className="mb-2 block text-sm font-semibold text-ink">Display name</label>
             <input {...register("displayName")} />
             {errors.displayName ? <p className="mt-1 text-sm text-danger">{errors.displayName.message}</p> : null}
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-ink">Email</label>
+            <label className="mb-2 block text-sm font-semibold text-ink">Email</label>
             <input type="email" {...register("email")} />
             {errors.email ? <p className="mt-1 text-sm text-danger">{errors.email.message}</p> : null}
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink">Password</label>
+            <label className="mb-2 block text-sm font-semibold text-ink">Password</label>
             <input type="password" {...register("password")} />
             {errors.password ? <p className="mt-1 text-sm text-danger">{errors.password.message}</p> : null}
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink">Confirm password</label>
+            <label className="mb-2 block text-sm font-semibold text-ink">Confirm password</label>
             <input type="password" {...register("confirmPassword")} />
             {errors.confirmPassword ? <p className="mt-1 text-sm text-danger">{errors.confirmPassword.message}</p> : null}
           </div>
@@ -67,16 +69,16 @@ export const SignupPage = () => {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full rounded-full bg-accent px-5 py-3 font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+              className="auth-cta w-full rounded-full bg-accent px-5 py-3 font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
             >
               {mutation.isPending ? "Creating account..." : "Sign up"}
             </button>
           </div>
         </form>
 
-        <p className="mt-6 text-sm text-muted">
+        <p className="mt-7 text-sm text-muted">
           Already registered?{" "}
-          <Link to="/login" className="font-semibold text-accent">
+          <Link to="/login" className="font-semibold text-accent transition hover:text-accent2">
             Login
           </Link>
         </p>

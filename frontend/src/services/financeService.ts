@@ -5,8 +5,10 @@ import type {
   Budget,
   Category,
   CategorySpendResponse,
+  FutureBalancePrediction,
   Goal,
   IncomeExpenseTrendItem,
+  Insight,
   PageResponse,
   RecurringTransaction,
   Transaction,
@@ -52,4 +54,7 @@ export const financeService = {
     (await api.get<IncomeExpenseTrendItem[]>("/api/reports/income-vs-expense", { params })).data,
   getAccountBalanceTrend: async (params?: Record<string, unknown>) =>
     (await api.get<AccountBalanceTrendItem[]>("/api/reports/account-balance-trend", { params })).data,
+  getInsights: async () => (await api.get<Insight[]>("/api/reports/insights")).data,
+  getFutureBalancePrediction: async () =>
+    (await api.get<FutureBalancePrediction>("/api/reports/future-balance-prediction")).data,
 };
