@@ -46,6 +46,11 @@ export const LoginPage = () => {
             <label className="mb-2 block text-sm font-semibold text-ink">Password</label>
             <input type="password" {...register("password")} />
             {errors.password ? <p className="mt-1 text-sm text-danger">{errors.password.message}</p> : null}
+            <div className="mt-2 text-right">
+              <Link to="/forgot-password" className="text-sm font-semibold text-accent transition hover:text-accent2">
+                Forgot Password?
+              </Link>
+            </div>
           </div>
           {mutation.isError ? <p className="text-sm text-danger">Login failed. Check your credentials and API availability.</p> : null}
           <button

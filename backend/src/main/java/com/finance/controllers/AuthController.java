@@ -1,9 +1,12 @@
 package com.finance.controllers;
 
 import com.finance.dto.AuthDtos.AuthResponse;
+import com.finance.dto.AuthDtos.ForgotPasswordRequest;
 import com.finance.dto.AuthDtos.LoginRequest;
+import com.finance.dto.AuthDtos.MessageResponse;
 import com.finance.dto.AuthDtos.RefreshTokenRequest;
 import com.finance.dto.AuthDtos.RegisterRequest;
+import com.finance.dto.AuthDtos.ResetPasswordRequest;
 import com.finance.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +38,15 @@ public class AuthController {
     @PostMapping("/refresh")
     public AuthResponse refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return authService.refresh(request);
+    }
+
+    @PostMapping("/forgot-password")
+    public MessageResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        return authService.forgotPassword(request);
+    }
+
+    @PostMapping("/reset-password")
+    public MessageResponse resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return authService.resetPassword(request);
     }
 }

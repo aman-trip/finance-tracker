@@ -12,6 +12,10 @@ export type AuthResponse = {
   user: User;
 };
 
+export type MessageResponse = {
+  message: string;
+};
+
 export type AccountType = "BANK_ACCOUNT" | "CREDIT_CARD" | "CASH_WALLET" | "SAVINGS_ACCOUNT";
 export type CategoryType = "INCOME" | "EXPENSE";
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER_IN" | "TRANSFER_OUT";

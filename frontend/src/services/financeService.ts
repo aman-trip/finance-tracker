@@ -9,6 +9,7 @@ import type {
   Goal,
   IncomeExpenseTrendItem,
   Insight,
+  MessageResponse,
   PageResponse,
   RecurringTransaction,
   Transaction,
@@ -17,6 +18,8 @@ import type {
 export const financeService = {
   login: (payload: { email: string; password: string }) => api.post("/api/auth/login", payload),
   register: (payload: { email: string; password: string; displayName: string }) => api.post("/api/auth/register", payload),
+  forgotPassword: (payload: { email: string }) => api.post<MessageResponse>("/api/auth/forgot-password", payload),
+  resetPassword: (payload: { token: string; newPassword: string }) => api.post<MessageResponse>("/api/auth/reset-password", payload),
 
   getAccounts: async () => (await api.get<Account[]>("/api/accounts")).data,
   createAccount: async (payload: Record<string, unknown>) => (await api.post<Account>("/api/accounts", payload)).data,
