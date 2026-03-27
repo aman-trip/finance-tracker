@@ -12,6 +12,9 @@ import { GoalsPage } from "./pages/GoalsPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { AccountsPage } from "./pages/AccountsPage";
 import { RecurringPage } from "./pages/RecurringPage";
+import { InsightsPage } from "./pages/InsightsPage";
+import { RulesPage } from "./pages/RulesPage";
+import { SharedAccountsPage } from "./pages/SharedAccountsPage";
 import { useAuth } from "./hooks/useAuth";
 
 export default function App() {
@@ -31,6 +34,9 @@ export default function App() {
           <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/goals" element={<GoalsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/rules" element={<RulesPage />} />
+          <Route path="/shared-accounts" element={<SharedAccountsPage />} />
           <Route path="/recurring" element={<RecurringPage />} />
         </Route>
       </Route>

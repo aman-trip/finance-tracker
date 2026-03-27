@@ -1,13 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from "../features/auth/schema";
 import { financeService } from "../services/financeService";
+import { extractApiError } from "../utils/apiError";
 
 const GENERIC_SUCCESS_MESSAGE = "If this email exists, a reset link has been sent";
 
 export const ForgotPasswordPage = () => {
+  const [apiError, setApiError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -21,6 +24,12 @@ export const ForgotPasswordPage = () => {
     mutationFn: async (values: ForgotPasswordFormValues) => {
       const { data } = await financeService.forgotPassword(values);
       return data;
+    },
+    onMutate: () => {
+      setApiError(null);
+    },
+    onError: (error) => {
+      setApiError(extractApiError(error, "Unable to send reset link. Please try again.").message);
     },
   });
 
@@ -41,7 +50,7 @@ export const ForgotPasswordPage = () => {
           </div>
 
           {mutation.isSuccess ? <p className="text-sm text-success">{GENERIC_SUCCESS_MESSAGE}</p> : null}
-          {mutation.isError ? <p className="text-sm text-danger">Unable to send reset link. Please try again.</p> : null}
+          {mutation.isError ? <p className="text-sm text-danger">{apiError ?? "Unable to send reset link. Please try again."}</p> : null}
 
           <button
             type="submit"

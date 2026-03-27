@@ -88,6 +88,38 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     created_at TIMESTAMPTZ NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS rules (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    condition_json TEXT NOT NULL,
+    action_json TEXT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+ALTER TABLE rules ADD COLUMN IF NOT EXISTS name VARCHAR(255) NOT NULL DEFAULT 'Migrated rule';
+ALTER TABLE rules ADD COLUMN IF NOT EXISTS condition_json TEXT NOT NULL DEFAULT json_build_object()::text;
+ALTER TABLE rules ADD COLUMN IF NOT EXISTS action_json TEXT NOT NULL DEFAULT json_build_object()::text;
+ALTER TABLE rules DROP COLUMN IF EXISTS action_type;
+ALTER TABLE rules DROP COLUMN IF EXISTS action_value;
+ALTER TABLE rules DROP COLUMN IF EXISTS condition_value;
+ALTER TABLE rules ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE rules ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE rules ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
+CREATE TABLE IF NOT EXISTS account_members (
+    id UUID PRIMARY KEY,
+    account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR(50) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL
+);
+
+ALTER TABLE account_members ADD COLUMN IF NOT EXISTS role VARCHAR(50) NOT NULL DEFAULT 'VIEWER';
+ALTER TABLE account_members ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
 CREATE INDEX IF NOT EXISTS idx_accounts_user_id ON accounts(user_id);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id_date ON transactions(user_id, transaction_date);
@@ -98,3 +130,8 @@ CREATE INDEX IF NOT EXISTS idx_goals_user_id ON goals(user_id);
 CREATE INDEX IF NOT EXISTS idx_recurring_user_id_next_run ON recurring_transactions(user_id, next_run_date);
 CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expiry_time ON password_reset_tokens(expiry_time);
+CREATE INDEX IF NOT EXISTS idx_rules_user_id ON rules(user_id);
+CREATE INDEX IF NOT EXISTS idx_rules_user_id_active ON rules(user_id, is_active);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_account_members_account_user ON account_members(account_id, user_id);
+CREATE INDEX IF NOT EXISTS idx_account_members_account_id ON account_members(account_id);
+CREATE INDEX IF NOT EXISTS idx_account_members_user_id ON account_members(user_id);

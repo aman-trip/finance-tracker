@@ -38,6 +38,14 @@ export const ReportsPage = () => {
     queryKey: ["reports", "account-balance", params],
     queryFn: () => financeService.getAccountBalanceTrend(params),
   });
+  const trendsQuery = useQuery({
+    queryKey: ["reports", "trends", params],
+    queryFn: () => financeService.getReportTrends(params),
+  });
+  const netWorthQuery = useQuery({
+    queryKey: ["reports", "net-worth", params],
+    queryFn: () => financeService.getNetWorth(params),
+  });
 
   return (
     <div className="space-y-8">
@@ -146,6 +154,77 @@ export const ReportsPage = () => {
               </div>
             </div>
           ))}
+        </div>
+      </Panel>
+
+      <div className="grid items-start gap-6 xl:grid-cols-[1fr_1fr]">
+        <Panel title="Savings Trend" description="Daily savings momentum from income minus expenses.">
+          <div className="h-96 w-full overflow-hidden rounded-2xl border border-line/70 bg-white/75 p-4 shadow-sm transition-all duration-300 hover:shadow-md">
+            <div className="h-full w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendsQuery.data?.savings ?? []} margin={{ top: 14, right: 16, left: 4, bottom: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(126, 144, 173, 0.18)" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value: number) => formatCurrency(value)}
+                    contentStyle={{ borderRadius: "12px", borderColor: "rgba(126, 144, 173, 0.28)" }}
+                  />
+                  <Legend verticalAlign="top" iconType="circle" wrapperStyle={{ paddingBottom: "8px", fontSize: "12px" }} />
+                  <Line type="monotone" dataKey="savings" stroke="#12a37d" strokeWidth={3} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </Panel>
+
+        <Panel title="Net Worth" description="Combined running value of all accessible accounts.">
+          <div className="mb-4 rounded-2xl border border-line/70 bg-white/80 px-4 py-3 text-sm text-muted shadow-sm">
+            Current net worth: <span className="font-semibold text-ink">{formatCurrency(netWorthQuery.data?.currentNetWorth ?? 0)}</span>
+          </div>
+          <div className="h-80 w-full overflow-hidden rounded-2xl border border-line/70 bg-white/75 p-4 shadow-sm transition-all duration-300 hover:shadow-md">
+            <div className="h-full w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={netWorthQuery.data?.points ?? []} margin={{ top: 14, right: 16, left: 4, bottom: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(126, 144, 173, 0.18)" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value: number) => formatCurrency(value)}
+                    contentStyle={{ borderRadius: "12px", borderColor: "rgba(126, 144, 173, 0.28)" }}
+                  />
+                  <Line type="monotone" dataKey="netWorth" stroke="#1f5eff" strokeWidth={3} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </Panel>
+      </div>
+
+      <Panel title="Category Trend Leaders" description="Top spending categories across the selected period.">
+        <div className="grid gap-6 xl:grid-cols-2">
+          {(trendsQuery.data?.categoryTrends ?? []).map((series, index) => (
+            <div key={series.category} className="rounded-[24px] border border-line/70 bg-white/80 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+              <p className="mb-3 font-semibold text-ink">{series.category}</p>
+              <div className="h-64 w-full overflow-hidden rounded-2xl border border-line/70 bg-white/75 p-4">
+                <div className="h-full w-full min-w-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={series.points} margin={{ top: 14, right: 16, left: 4, bottom: 8 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(126, 144, 173, 0.18)" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip
+                        formatter={(value: number) => formatCurrency(value)}
+                        contentStyle={{ borderRadius: "12px", borderColor: "rgba(126, 144, 173, 0.28)" }}
+                      />
+                      <Line type="monotone" dataKey="amount" stroke={colors[index % colors.length]} strokeWidth={3} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          ))}
+          {!trendsQuery.data?.categoryTrends.length ? <p className="text-sm text-muted">No category trend data in this range.</p> : null}
         </div>
       </Panel>
     </div>

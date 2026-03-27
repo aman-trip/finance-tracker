@@ -1,15 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPasswordSchema, type ResetPasswordFormValues } from "../features/auth/schema";
 import { financeService } from "../services/financeService";
+import { extractApiError } from "../utils/apiError";
 
 export const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -27,6 +29,12 @@ export const ResetPasswordPage = () => {
       }
       const { data } = await financeService.resetPassword({ token, newPassword: values.newPassword });
       return data;
+    },
+    onMutate: () => {
+      setApiError(null);
+    },
+    onError: (error) => {
+      setApiError(extractApiError(error, "Reset failed. The link may be invalid or expired.").message);
     },
   });
 
@@ -70,7 +78,7 @@ export const ResetPasswordPage = () => {
             </div>
 
             {mutation.isSuccess ? <p className="text-sm text-success">Password reset successful. Redirecting to login...</p> : null}
-            {mutation.isError ? <p className="text-sm text-danger">Reset failed. The link may be invalid or expired.</p> : null}
+            {mutation.isError ? <p className="text-sm text-danger">{apiError ?? "Reset failed. The link may be invalid or expired."}</p> : null}
 
             <button
               type="submit"

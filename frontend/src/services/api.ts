@@ -11,7 +11,7 @@ export const api = axios.create({
   },
 });
 
-const authApi = axios.create({
+export const publicApi = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
@@ -65,7 +65,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const { data } = await authApi.post<AuthResponse>("/api/auth/refresh", { refreshToken });
+      const { data } = await publicApi.post<AuthResponse>("/api/auth/refresh", { refreshToken });
       setSession({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
