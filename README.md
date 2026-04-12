@@ -1,140 +1,157 @@
 # Personal Finance Tracker
 
-React frontend with an ASP.NET Core Web API backend and PostgreSQL, packaged for Podman.
+Production-ready full-stack personal finance management platform with a Spring Boot 3 backend and React 18 frontend.
 
 ## Stack
 
-- Backend: .NET 8, ASP.NET Core Web API, Entity Framework Core, Npgsql, JWT
-- Frontend: React 18, Vite, Axios, Zustand, React Hook Form, Zod, Recharts, Tailwind CSS
-- Runtime: Podman / `podman-compose`
+- Backend: Java 21, Spring Boot 3, Spring Security, JWT, Spring Data JPA, PostgreSQL, Maven
+- Frontend: React 18, Vite, React Router, TanStack Query, Axios, Zustand, React Hook Form, Zod, Recharts, Tailwind CSS
+- Docker: PostgreSQL, backend, frontend via `docker-compose`
 
 ## Project Structure
 
 ```text
 finance-tracker/
-  backend-dotnet/
-    FinanceTracker.Api/
-    FinanceTracker.Api.Tests/
+  backend/
   frontend/
-  .env
-  .env.example
-  docker-compose.yml
-  podman-compose.yml
-  schema.sql
   README.md
+  docker-compose.yml
+  schema.sql
 ```
 
-## Removed Java Components
+## Backend Highlights
 
-The Spring Boot backend has been removed from the repo:
+- JWT access and refresh token flow
+- User-scoped repository access and service methods
+- Accounts, transactions, categories, budgets, goals, recurring transactions, and reports
+- Transfer handling with paired ledger entries
+- Scheduler for recurring transactions
+- Global exception handling and request validation
+- Pagination and filtering for transactions
 
-- deleted `backend/` Java source tree
-- deleted `backend/pom.xml`
-- deleted Java backend Dockerfile and transitional Java compose wiring
-- deleted `docker-compose.dotnet.yml` because the root compose files now run the .NET stack directly
+## Frontend Highlights
 
-## Environment
+- Protected routing with persisted auth state
+- Dashboard widgets for balances, budgets, goals, recurring items, and charts
+- CRUD flows for transactions, accounts, budgets, goals, and recurring rules
+- Reporting charts for category spend, income vs expense, and account balance trends
+- Responsive Tailwind UI
 
-The backend reads these environment variables:
+## Local Setup
 
-- `DB_HOST`
-- `DB_PORT`
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASSWORD`
-- `JWT_SECRET`
-- `CORS_ALLOWED_ORIGINS`
+### 1. Start PostgreSQL
 
-The frontend build reads:
+Use an existing PostgreSQL instance or Docker:
 
-- `VITE_API_URL`
+```bash
+docker compose up postgres -d
+```
 
-Defaults are provided in [.env.example](/mnt/e/GIT%20REPO/finance-tracker/.env.example) and a local runnable dev config is in [.env](/mnt/e/GIT%20REPO/finance-tracker/.env).
+### 2. Run the backend
 
-## Ports
+```bash
+cd backend
+mvn spring-boot:run
+```
 
-- Frontend container: `http://localhost:4173`
-- Frontend Vite dev server: `http://localhost:5173`
-- Backend API: `http://localhost:8080`
+Default environment values:
+
+- `DB_URL=jdbc:postgresql://localhost:5432/finance_tracker`
+- `DB_USERNAME=postgres`
+- `DB_PASSWORD=postgres`
+- `JWT_ACCESS_SECRET=<base64-secret>`
+- `JWT_REFRESH_SECRET=<base64-secret>`
+
+### 3. Run the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend default URL: `http://localhost:5173`
+
+Backend default URL: `http://localhost:8080`
+
+## Docker Setup
+
+Start everything:
+
+```bash
+docker compose up --build
+```
+
+Services:
+
+- Frontend: `http://localhost:4173`
+- Backend: `http://localhost:8080`
 - PostgreSQL: `localhost:5432`
 
-The frontend still calls the backend on `http://localhost:8080`, so no React code changes are required. The default CORS configuration allows both the containerized frontend on `4173` and the local Vite dev server on `5173`.
+## API Routes
 
-## Podman Run
+### Auth
 
-Start the full stack:
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
 
-```bash
-podman-compose up --build
-```
+### Transactions
 
-Run detached:
+- `GET /api/transactions`
+- `POST /api/transactions`
+- `GET /api/transactions/{id}`
+- `PUT /api/transactions/{id}`
+- `DELETE /api/transactions/{id}`
 
-```bash
-podman-compose up --build -d
-```
+### Accounts
 
-Stop and remove containers:
+- `GET /api/accounts`
+- `POST /api/accounts`
+- `PUT /api/accounts/{id}`
+- `POST /api/accounts/transfer`
 
-```bash
-podman-compose down
-```
+### Categories
 
-Stop and remove containers plus database volume:
+- `GET /api/categories`
+- `POST /api/categories`
+- `PUT /api/categories/{id}`
+- `DELETE /api/categories/{id}`
 
-```bash
-podman-compose down -v
-```
+### Budgets
 
-## Direct Build Commands
+- `GET /api/budgets`
+- `POST /api/budgets`
+- `PUT /api/budgets/{id}`
+- `DELETE /api/budgets/{id}`
 
-Build the backend image directly:
+### Goals
 
-```bash
-podman build -t finance-tracker-backend ./backend-dotnet/FinanceTracker.Api
-```
+- `GET /api/goals`
+- `POST /api/goals`
+- `PUT /api/goals/{id}`
+- `POST /api/goals/{id}/contribute`
+- `POST /api/goals/{id}/withdraw`
 
-Build the frontend image directly:
+### Reports
 
-```bash
-podman build -t finance-tracker-frontend ./frontend
-```
+- `GET /api/reports/category-spend`
+- `GET /api/reports/income-vs-expense`
+- `GET /api/reports/account-balance-trend`
 
-## Compose Services
+### Recurring
 
-- `postgres`: PostgreSQL 16 with schema initialization from [schema.sql](/mnt/e/GIT%20REPO/finance-tracker/schema.sql)
-- `backend`: ASP.NET Core API built from [Dockerfile](/mnt/e/GIT%20REPO/finance-tracker/backend-dotnet/FinanceTracker.Api/Dockerfile)
-- `frontend`: React app built with Vite and served by Nginx via [Dockerfile](/mnt/e/GIT%20REPO/finance-tracker/frontend/Dockerfile)
+- `GET /api/recurring`
+- `POST /api/recurring`
+- `PUT /api/recurring/{id}`
+- `DELETE /api/recurring/{id}`
 
-## API Compatibility
+## Verification Performed
 
-The .NET backend keeps the existing frontend contract:
-
-- same routes under `/api/*`
-- same JSON field names
-- same JWT bearer header flow
-- same PostgreSQL schema
-- same default backend port `8080`
-
-## Verification Commands
-
-After startup:
-
-```bash
-podman-compose ps
-podman-compose logs backend
-podman-compose logs postgres
-curl http://localhost:8080/actuator/health
-```
-
-The expected health response is:
-
-```json
-{"status":"UP"}
-```
+- Backend: `mvn -q -DskipTests compile`
+- Frontend: `npm run build`
 
 ## Notes
 
-- Both [docker-compose.yml](/mnt/e/GIT%20REPO/finance-tracker/docker-compose.yml) and [podman-compose.yml](/mnt/e/GIT%20REPO/finance-tracker/podman-compose.yml) now describe the same .NET-only stack.
-- The frontend is served as static files through Nginx for a simpler production-style container.
-- Replace the development `JWT_SECRET` in [.env](/mnt/e/GIT%20REPO/finance-tracker/.env) before using this outside local development.
+- The frontend build currently emits a Vite chunk-size warning because the reporting bundle includes Recharts. The app still builds successfully.
+- PostgreSQL schema is included in `schema.sql`. Spring Boot is configured with `ddl-auto: update`, so the app can also manage schema evolution during development.

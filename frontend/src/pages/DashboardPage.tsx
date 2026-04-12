@@ -48,12 +48,6 @@ const BarsIcon = () => (
   </svg>
 );
 
-const PulseIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-    <path d="M3 12h4l2.5-5 3 10 2.5-5H21" />
-  </svg>
-);
-
 const insightTypeIcons: Record<string, string> = {
   SPENDING: "S",
   BUDGET: "B",
@@ -79,17 +73,13 @@ export const DashboardPage = () => {
     queryKey: ["reports", "income-expense", range],
     queryFn: () => financeService.getIncomeExpenseTrend(range),
   });
-  const insightsOverviewQuery = useQuery({
-    queryKey: ["insights", "overview"],
-    queryFn: financeService.getInsightsOverview,
+  const insightsQuery = useQuery({
+    queryKey: ["reports", "insights"],
+    queryFn: financeService.getInsights,
   });
-  const healthScoreQuery = useQuery({
-    queryKey: ["insights", "health-score"],
-    queryFn: financeService.getHealthScore,
-  });
-  const forecastQuery = useQuery({
-    queryKey: ["forecast", "month"],
-    queryFn: financeService.getForecastMonth,
+  const predictionQuery = useQuery({
+    queryKey: ["reports", "future-balance-prediction"],
+    queryFn: financeService.getFutureBalancePrediction,
   });
 
   const totals = useMemo(() => {
@@ -104,7 +94,7 @@ export const DashboardPage = () => {
 
   return (
     <div className="space-y-8">
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatsCard
           label="Month Income"
           value={formatCurrency(totals.income)}
@@ -137,52 +127,27 @@ export const DashboardPage = () => {
           trendTone="neutral"
           icon={<WalletIcon />}
         />
-        <StatsCard
-          label="Health Score"
-          value={`${healthScoreQuery.data?.score ?? 0}/100`}
-          helper="Savings, stability, budgets, and cash buffer."
-          trend={
-            (healthScoreQuery.data?.score ?? 0) >= 80
-              ? "Financially strong"
-              : (healthScoreQuery.data?.score ?? 0) >= 60
-                ? "Room to optimize"
-                : "Needs attention"
-          }
-          trendTone={
-            (healthScoreQuery.data?.score ?? 0) >= 80
-              ? "positive"
-              : (healthScoreQuery.data?.score ?? 0) >= 60
-                ? "neutral"
-                : "negative"
-          }
-          icon={<PulseIcon />}
-        />
       </section>
 
-      <Panel title="Cash Flow Forecast" description="Projected end-of-period balance and safe daily spending guidance from recent behavior and recurring activity.">
+      <Panel title="Future Balance Prediction" description="Estimated balance for the next 30 days using recurring cash flow and average daily spending.">
         <div className="rounded-2xl border border-accent/15 bg-gradient-to-r from-accent/10 via-white/40 to-accent2/10 p-4 dark:border-slate-700/70 dark:from-accent/20 dark:via-slate-900/50 dark:to-accent2/20">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-2xl border border-line/70 bg-white/90 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/75">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Forecast Balance</p>
-              <p className="mt-1 text-2xl font-semibold text-ink">{formatCurrency(forecastQuery.data?.forecastBalance ?? accountBalance)}</p>
-              <p className="mt-1 text-sm text-muted dark:text-slate-300">In {forecastQuery.data?.horizonDays ?? 30} days</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Predicted Balance</p>
+              <p className="mt-1 text-2xl font-semibold text-ink">{formatCurrency(predictionQuery.data?.predictedBalance ?? accountBalance)}</p>
+              <p className="mt-1 text-sm text-muted dark:text-slate-300">In {predictionQuery.data?.horizonDays ?? 30} days</p>
             </div>
             <div className="rounded-2xl border border-line/70 bg-white/90 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/75">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Current Balance</p>
-              <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(forecastQuery.data?.currentBalance ?? accountBalance)}</p>
+              <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(predictionQuery.data?.currentBalance ?? accountBalance)}</p>
             </div>
             <div className="rounded-2xl border border-line/70 bg-white/90 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/75">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Safe To Spend</p>
-              <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(forecastQuery.data?.safeToSpend ?? 0)}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Recurring Net Impact</p>
+              <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(predictionQuery.data?.projectedRecurringNet ?? 0)}</p>
             </div>
             <div className="rounded-2xl border border-line/70 bg-white/90 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/75">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Risk / Avg Spend</p>
-              <p className="mt-1 text-xl font-semibold text-ink">
-                {(forecastQuery.data?.risk ?? "LOW")} · {formatCurrency(forecastQuery.data?.averageDailySpend ?? 0)}
-              </p>
-              <p className="mt-1 text-sm text-muted dark:text-slate-300">
-                Recurring expenses {formatCurrency(forecastQuery.data?.recurringExpenses ?? 0)}
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted dark:text-slate-300">Avg Daily Spending</p>
+              <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(predictionQuery.data?.averageDailySpending ?? 0)}</p>
             </div>
           </div>
         </div>
@@ -190,7 +155,7 @@ export const DashboardPage = () => {
 
       <Panel title="Smart Insights" description="Actionable highlights based on your budgets and spending trends.">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {(insightsOverviewQuery.data?.highlights ?? []).slice(0, 5).map((insight, index) => (
+          {(insightsQuery.data ?? []).slice(0, 5).map((insight, index) => (
             <article
               key={`${insight.type}-${insight.title}-${index}`}
               className={`rounded-2xl border border-line/70 border-l-4 bg-white/85 p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift dark:bg-slate-900/70 ${
@@ -216,7 +181,7 @@ export const DashboardPage = () => {
               <p className="mt-1 text-sm text-muted dark:text-slate-300">{insight.description}</p>
             </article>
           ))}
-          {!insightsOverviewQuery.data?.highlights.length ? <p className="text-sm text-muted dark:text-slate-300">No insights available yet.</p> : null}
+          {!insightsQuery.data?.length ? <p className="text-sm text-muted dark:text-slate-300">No insights available yet.</p> : null}
         </div>
       </Panel>
 

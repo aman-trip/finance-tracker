@@ -45,26 +45,6 @@ const ChartIcon = ({ className = "h-4 w-4" }: IconProps) => (
   </svg>
 );
 
-const PulseIcon = ({ className = "h-4 w-4" }: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
-    <path d="M3 12h4l2.5-5 3 10 2.5-5H21" />
-  </svg>
-);
-
-const RulesIcon = ({ className = "h-4 w-4" }: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
-    <path d="M4 6h16M4 12h10M4 18h7" />
-    <circle cx="17" cy="12" r="2" />
-    <circle cx="14" cy="18" r="2" />
-  </svg>
-);
-
-const UsersIcon = ({ className = "h-4 w-4" }: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
-    <path d="M16 19a4 4 0 0 0-8 0M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 7a3.5 3.5 0 0 0-3-3.46M17 8a2.5 2.5 0 1 0 0-5" />
-  </svg>
-);
-
 const RepeatIcon = ({ className = "h-4 w-4" }: IconProps) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
     <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4m14-2v2a4 4 0 0 1-4 4H3" />
@@ -91,9 +71,6 @@ const navigation = [
   { to: "/budgets", label: "Budgets", icon: BudgetIcon },
   { to: "/goals", label: "Goals", icon: TargetIcon },
   { to: "/reports", label: "Reports", icon: ChartIcon },
-  { to: "/insights", label: "Insights", icon: PulseIcon },
-  { to: "/rules", label: "Rules", icon: RulesIcon },
-  { to: "/shared-accounts", label: "Shared", icon: UsersIcon },
   { to: "/recurring", label: "Recurring", icon: RepeatIcon },
 ];
 

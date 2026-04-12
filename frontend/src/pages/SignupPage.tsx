@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -7,12 +6,10 @@ import { financeService } from "../services/financeService";
 import { useAuthStore } from "../store/authStore";
 import type { AuthResponse } from "../types";
 import { signupSchema, type SignupFormValues } from "../features/auth/schema";
-import { extractApiError } from "../utils/apiError";
 
 export const SignupPage = () => {
   const navigate = useNavigate();
   const setSession = useAuthStore((state) => state.setSession);
-  const [apiError, setApiError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -31,16 +28,9 @@ export const SignupPage = () => {
           password: values.password,
         })
       ).data as AuthResponse,
-    onMutate: () => {
-      setApiError(null);
-    },
     onSuccess: (data) => {
       setSession({ accessToken: data.accessToken, refreshToken: data.refreshToken, user: data.user });
       navigate("/");
-    },
-    onError: (error) => {
-      const parsed = extractApiError(error, "Signup failed. Check API availability and CORS configuration.");
-      setApiError(parsed.message);
     },
   });
 
@@ -75,7 +65,7 @@ export const SignupPage = () => {
             {errors.confirmPassword ? <p className="mt-1 text-sm text-danger">{errors.confirmPassword.message}</p> : null}
           </div>
           <div className="sm:col-span-2">
-            {apiError ? <p className="mb-3 text-sm text-danger">{apiError}</p> : null}
+            {mutation.isError ? <p className="mb-3 text-sm text-danger">Signup failed. The email may already be in use.</p> : null}
             <button
               type="submit"
               disabled={mutation.isPending}

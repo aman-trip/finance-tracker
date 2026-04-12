@@ -21,7 +21,6 @@ export type CategoryType = "INCOME" | "EXPENSE";
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER_IN" | "TRANSFER_OUT";
 export type GoalStatus = "ACTIVE" | "COMPLETED" | "CANCELLED";
 export type RecurringFrequency = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
-export type AccountMembershipRole = "OWNER" | "EDITOR" | "VIEWER";
 
 export type Account = {
   id: string;
@@ -123,11 +122,6 @@ export type AccountBalanceTrendItem = {
   points: { date: string; balance: number }[];
 };
 
-export type TrendPoint = {
-  date: string;
-  amount: number;
-};
-
 export type Insight = {
   type: string;
   title: string;
@@ -141,92 +135,4 @@ export type FutureBalancePrediction = {
   averageDailySpending: number;
   predictedBalance: number;
   horizonDays: number;
-};
-
-export type ForecastMonth = {
-  currentBalance: number;
-  forecastBalance: number;
-  safeToSpend: number;
-  averageDailySpend: number;
-  recurringExpenses: number;
-  risk: "LOW" | "MEDIUM" | "HIGH";
-  horizonDays: number;
-};
-
-export type ForecastDailyPoint = {
-  date: string;
-  projectedBalance: number;
-  safeToSpend: number;
-  risk: "LOW" | "MEDIUM" | "HIGH";
-};
-
-export type ForecastDaily = {
-  points: ForecastDailyPoint[];
-  forecastBalance: number;
-  safeToSpend: number;
-  risk: "LOW" | "MEDIUM" | "HIGH";
-};
-
-export type HealthScoreBreakdownItem = {
-  metric: string;
-  score: number;
-  maxScore: number;
-  detail: string;
-};
-
-export type HealthScore = {
-  score: number;
-  breakdown: HealthScoreBreakdownItem[];
-  suggestions: string[];
-};
-
-export type InsightsOverview = {
-  healthScore: HealthScore;
-  highlights: Insight[];
-};
-
-export type Rule = {
-  id: string;
-  name: string;
-  conditionJson: string;
-  actionJson: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type SavingsTrendPoint = {
-  date: string;
-  income: number;
-  expense: number;
-  savings: number;
-};
-
-export type CategoryTrendSeries = {
-  category: string;
-  points: TrendPoint[];
-};
-
-export type TrendsResponse = {
-  incomeExpense: IncomeExpenseTrendItem[];
-  savings: SavingsTrendPoint[];
-  categoryTrends: CategoryTrendSeries[];
-};
-
-export type NetWorthPoint = {
-  date: string;
-  netWorth: number;
-};
-
-export type NetWorthResponse = {
-  currentNetWorth: number;
-  points: NetWorthPoint[];
-};
-
-export type AccountMember = {
-  userId: string;
-  email: string;
-  displayName: string;
-  role: AccountMembershipRole;
-  owner: boolean;
 };
